@@ -1,6 +1,6 @@
 
 from collections import OrderedDict
-
+import uuid
 
 OPENAI_HOST = "chat.openai.com"
 
@@ -26,7 +26,7 @@ def generateSessionHeadersPayload(clearance, session):
     cf_clearance={clearance}; \
     intercom-session-dgkjq2bp=WFJudkNJODdIWFExTkFZb0oxekxVM25kNmFFcXh3TUREV2oxNS82bU1naGlxS3JHUWI4a29iRGpueUVXSlpMVS0teEt0b3V4OHprUUJpKzk2K3E2TUoydz09--f298ba6b7fe13393a442fbda77610b361451a72a; \
     intercom-device-id-dgkjq2bp=5c42ddb6-551b-4733-b2fc-479cff7e58d8; \
-    __Secure-next-auth.session-token={session_token} \
+    __Secure-next-auth.session-token={session_token}; \
     __Secure-next-auth.callback-url=https%3A%2F%2Fchat.openai.com%2F; \
     _cfuvid=kZCoZC2zxGLpu4OZFhqgS.pJjG63PFV0bJLTsWR3UBw-1671527691263-0-604800000; \
     _gid=GA1.2.1218786756.1671659418; \
@@ -49,13 +49,50 @@ def generateConvoBodyPayload():
 
     pass
 
-def generateMessageHeadersPayload():
+def generateMessageHeadersPayload(bearer, clearance, session):
+    headers = OrderedDict()
 
-    pass
+    headers["Host"] = OPENAI_HOST
+    headers["User-Agent"] = USER_AGENT
+    headers["Accept"] = "text/event-stream"
+    headers["Accept-Language"] = "en-US,en;q=0.5"
+    headers["Accept-Encoding"] = "gzip, deflate, br"
+    headers["Referer"] = "https://{host}/chat".format(host=OPENAI_HOST)
+    headers["Content-Type"] = "application/json"
+    headers["X-OpenAI-Assistant-App-Id"] = ""
+    headers["Authorization"] = "Bearer {bearer}".format(bearer=bearer)
+    # headers["Content-Length"] = "233"
+    headers["Origin"] = "https://chat.openai.com"
+    headers["Alt-Used"] = OPENAI_HOST
+    headers["Connection"] = "keep-alive"
+    headers["Cookie"] = "ga=GA1.2.276779431.1670925280; \
+    cf_clearance={clearance}; \
+    intercom-session-dgkjq2bp=WFJudkNJODdIWFExTkFZb0oxekxVM25kNmFFcXh3TUREV2oxNS82bU1naGlxS3JHUWI4a29iRGpueUVXSlpMVS0teEt0b3V4OHprUUJpKzk2K3E2TUoydz09--f298ba6b7fe13393a442fbda77610b361451a72a; \
+    intercom-device-id-dgkjq2bp=5c42ddb6-551b-4733-b2fc-479cff7e58d8; \
+    __Secure-next-auth.session-token={session_token}; \
+    __Host-next-auth.csrf-token=ae2da62f2c18cc56ae3774e8e6d3941cba92dee2b9c6f636e1378e6a60b2f172%7Ca3facbcc0fa98177e9eaa9921b7e3c4618a8fe8a50d989b3c0f1d1f02a619a1f; \
+    __Secure-next-auth.callback-url=https%3A%2F%2Fchat.openai.com%2F; \
+    _cfuvid=kZCoZC2zxGLpu4OZFhqgS.pJjG63PFV0bJLTsWR3UBw-1671527691263-0-604800000; \
+    _gid=GA1.2.1218786756.1671659418; \
+    __cf_bm=if03zIJqaBVFWS9hPSdCZIJol7skKQsivY2qds7oY1g-1671727780-0-AS0IMKd6Pi/pQfOXNtNz7BMpOW7TMpKZKe17EBfas4CLIUjXr9hlsRZTzSwMgC0QS/DjENNfNUM+JK+R3TryDKjlQVsbf5uemi+/gdviNLqJCUy24XG6YiGxR0l17EkxQLyDwmiuQdr5zQN2m/ZK4PmjIa0pvXUckxioEQkg9bk6K2W+YEzqdXqab4wDAOIjxA==XX".format(clearance=clearance, session_token=session)
+    headers["Sec-Fetch-Dest"] = "empty"
+    headers["Sec-Fetch-Mode"] = "cors"
+    headers["Sec-Fetch-Site"] = "same-origin"
+    headers["TE"] = "trailers"
 
-def generateMessageBodyPayload():
+    return headers
 
-    pass
+def generateMessageBodyPayload(message):
+    return {
+        "action":"next",
+        "messages":[{
+            "id":str(uuid.uuid4()),
+            "role":"user","content":{
+                "content_type":"text",
+                "parts":[message]}}],
+
+        "parent_message_id": str(uuid.uuid4()),
+        "model":"text-davinci-002-render"}
 
 # GET /api/auth/session HTTP/3
 # Host: chat.openai.com

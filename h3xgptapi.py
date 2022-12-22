@@ -86,7 +86,6 @@ host_message = "https://chat.openai.com/backend-api/conversation"
 # # #   "Content-Length": "232",
 # # #   "User-Agent": user_agent,
 # # # }
-data_payload = '{"action":"next","messages":[{"id":"c1049229-a54c-4388-b9ff-87eece40a9d0","role":"user","content":{"content_type":"text","parts":["sss"]}}],"parent_message_id":"8b47d50e-7511-4696-9c36-9f6f8c996ac3","model":"text-davinci-002-render"}'
 headers_message = {
     "Content-Type": "application/json",
     "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0",
@@ -400,86 +399,106 @@ headers_message = {
 # import selenium
 from cipherAdapters import CipherAdapter
 import payloads
+import dataManip
+from collections import OrderedDict
+s = requests.session()
+s.mount('https://chat.openai.com/', CipherAdapter())
+s.headers = OrderedDict()
 
-# s = requests.session()
-# s.mount('https://chat.openai.com/', CipherAdapter())
-# s.headers = OrderedDict()
+s.headers["Host"] = "chat.openai.com"
+s.headers["User-Agent"] = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"
+s.headers["Accept"] = "text/event-stream"
+s.headers["Accept-Language"] = "en-US,en;q=0.5"
+s.headers["Accept-Encoding"] = "gzip, deflate, br"
+s.headers["Referer"] = "https://chat.openai.com/chat"
+s.headers["Content-Type"] = "application/json"
+s.headers["X-OpenAI-Assistant-App-Id"] = ""
+s.headers["Authorization"] = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1UaEVOVUpHTkVNMVFURTRNMEZCTWpkQ05UZzVNRFUxUlRVd1FVSkRNRU13UmtGRVFrRXpSZyJ9.eyJodHRwczovL2FwaS5vcGVuYWkuY29tL3Byb2ZpbGUiOnsiZW1haWwiOiJtYXJrYXMudmllbGF2aWNpdXNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImdlb2lwX2NvdW50cnkiOiJMVCJ9LCJodHRwczovL2FwaS5vcGVuYWkuY29tL2F1dGgiOnsidXNlcl9pZCI6InVzZXItZnVra2hrZWpXVG9lb1F5MUJub1B6b3JUIn0sImlzcyI6Imh0dHBzOi8vYXV0aDAub3BlbmFpLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMjYyMzI1MjUxNjU2NjYzNTU1NCIsImF1ZCI6WyJodHRwczovL2FwaS5vcGVuYWkuY29tL3YxIiwiaHR0cHM6Ly9vcGVuYWkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTY3MTIyMzkyOSwiZXhwIjoxNjcxODI4NzI5LCJhenAiOiJUZEpJY2JlMTZXb1RIdE45NW55eXdoNUU0eU9vNkl0RyIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgbW9kZWwucmVhZCBtb2RlbC5yZXF1ZXN0IG9yZ2FuaXphdGlvbi5yZWFkIG9mZmxpbmVfYWNjZXNzIn0.kNAVnuQ6R73Nqg3oUZ_6WmUtCLwV8bf2gAxTzesJZv4aIdMESZvC6bEm9PJeoYb4tCR_MBxWMZThtzhu3673Mf6czmSw_T49wPjz-TOLPTiOBUbIvL1FjO8v86MTC3B_jXZgUi-0Pn2YPS6QBrH4YYP-obEovEKiDhI3Mm_hNG_A7RTqm7dI2BKWpqKXbySxCOjSqqjdDr7tsVDSWKXvhQUfO_Oie_gYUhvNsAIdSYNDOOhM7aTuc7dYZAHmfPZlIoX4_y3M6eFj3ef6tkXf5NMRD32oq-wrl127RwQpPSZXY7Jh62-xSquWZZVbWFc1z8d2sFESeAr8DC4UfDu8jQ"
+s.headers["Content-Length"] = "233"
+s.headers["Origin"] = "https://chat.openai.com"
+s.headers["Alt-Used"] = "chat.openai.com"
+s.headers["Connection"] = "keep-alive"
+s.headers["Cookie"] = "ga=GA1.2.276779431.1670925280; cf_clearance=ChQ7Td.NxJlvhIv.3t.QRsO2zXwjy4EOg5kgQhOqYBo-1671727779-0-1-ea1b3719.7f8f7cfc.570e39dd-160; intercom-session-dgkjq2bp=WFJudkNJODdIWFExTkFZb0oxekxVM25kNmFFcXh3TUREV2oxNS82bU1naGlxS3JHUWI4a29iRGpueUVXSlpMVS0teEt0b3V4OHprUUJpKzk2K3E2TUoydz09--f298ba6b7fe13393a442fbda77610b361451a72a; intercom-device-id-dgkjq2bp=5c42ddb6-551b-4733-b2fc-479cff7e58d8; __Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..O72y6lRHg9nTQbgK.rsPzyz6PKslYMAfPWF8bu1cl6F6O3BtM4po9gnGvfMh10klaSPvkwZ7e8KMRfWW-dnUt8cZaV6fTqgBym5fyEIkKEwihHy_xLbUEcsFHi4ZYYY2B3DmGM5zdkl0mtdmSKtjNqhbgZvPqTJawRNuiRk1t94RCHsmyrDgIc7fS9XLcHIlxIQsDPdyHC7qwIOu2yRFhQyFbC0R5KgYyw7-zwQ41EkXK-jUDzr7klsGMKei6WQjs2XLYzn37MpUdMKHdJJmp14U-31x-bNZRdLkGN5fL9GnH3LP0nMsBmsf2qqU7xVDWw5XYjOLL9kGKYghNVi_pjn_BP6K2kjkLFcEfOnYjqA2WWXqaCVY1pmWDEJgDyZcdem-nXWoorr6-xPXUYcFmdNsL6QJdvPWUkpq-KDst5_CP8Y5VwODtViXEVVg5ZdRX7695idt0AGbwMFvX8ziyJJJV2q_Sdna_7USHiVzqubn1299lpyzSdsbCX1YCk59RV30yeGR2q7Ip3V3zYKiVE7Mh35uUKw4yS2abAcEfFufjTfczUEDFXEPImH6ueIm07IYoOms7c4NeqQcnGrgjIjNcf2s3-LLJR721xFPIzv5uuEZpf27IBPqkaxJXQ_9hFnmyJRVf6xRbrZi7sTILSGalQZULsslZbhb1U2KDjC-OtBztfvqU_zRdCoPMutftN-_nRXXPwwXV2982hXtAiVkx3UnEp4GGpNtgFwwg5xsBOLl6IlR9as-3spqUjOqJJv5D7Qm2WGMZsl7FRE27D8Fd6KM9Cu0KK099QkJyR_9G_TdVGyJ-1H8S4rJDvyWbT27GBUrIu2nH4nIXPnUTXDQei0nd5tSWkcnqpzG1htYALzNCfOXy_luyAvJmgYQDt6VDnY99EYPxQwYZXOcubnRl1Su1pZ9Ef2L3zI_lqNtWz5k_YtG0Ajg4wOM6Z4r37kEFaOGuc8xg3Y8JHSiD-5jcc2wCfIosNEwYTF24B15q7uF4cmFH7Zl0hetu_rjmIgSncJH0HMvQbPIM_pjKLxZkI-9IruzqeFnkxrSHX-Mm4bbbkPt1boaa0VGfq0r_LpDSgRZXI7CIIp6_pps5VQhHy3nrq1TBezFEakdLKkmT51E_ao50BuD_NGhGynVwM1bROipQIINeJUL7VGDLxx240W2VDbisXpd90FRd9NlEdzXjmB3wK5Cy_mkyxTfmTdSadu04_i3w8ILeKUCjTNztMePF_rdXG5xQqAYznpb9t1H9Xvf-ibvGZkx-8eLke0fcApo-Azc061Z0Q2B_oJ1qkSgdUN1lTQDe5Y2IE604UrMT4lAXQZPLYDk4Xy19eJ8j6nXVImNSYfdi4EK0GKNDh8qrWkXgpNCk1o8Hg9llN2jDk5ofFzF7cKxo447tSCJFYsRy6ujja7eUmn9mT7Ml7UCAtdCbZnEOtSGWgGoNAxTqYSNCjjUPe9v0hx7LTqRrjo5Wte6E2QTti1FTFmH3un3CKCaZxc7o9VGS00rAcpe7fWIXXP10lfVuonx_tlcH80ZFenzdmgMpqSHR7-Ay9Z6dcagSaK_i0tKYdOAd3bQFXjzuf7nFjDNBGs0suEW33FotRk4exD5lw8o6LXYcdpknG1g-fTnf9KxQcdPNh7ulqqmQ9USvGmDo8gpBvEnYmlkJn74J79aD5JU6Z-osFbTYeOTWxXnXzvJNotmKwNyLtFxMqBo3HO6_iR_vv-JRtK9fFqGqznv2rqwKKH167T-eXwRPIHxGVH_QjHGI_5LVCAKBvlr18bsVJTbJoyfV44BK4s1jOj08BAQFw7L1aAa3hTUA1SsZnB98js3lUTaDhvNusVzPvR4wI3LMsw6qg42d9DRNYQGtskFFAV9GQPdLIar3d75b3PGClx5J5pqoZ9bbYshbDkFR1bVo4uocOvVRRHfpxl_H9s47JFqlSN2xKGCYbih1dk1qwungNogHz6f-jgz01oREW4j5_jpICKAzMOjWEf-xt3p5b0DNNM-BOrLtsGEuRotTFM4AoY-nktezB9ulK68FMmSA9UBQwgQnTSf3EQckP_-g5GywGlxTxfkLaG0p_Cvlx5IPaO5os9_AjmcC7g7tLaISzg_nwxqC9lOCgwopNC29vIyENCYLRf-z1BtKZHybFHWFhVe7JRlJexxfSLLd3WytCaPNfjJ1TwioBdpAk6NImRhp48XGVN77l1whhrKTAuu2-jhiDu3lAtDDzb7yaFNT3KrnSXEHAUphcq8pz8XHcGuKA8BiTaGZPQBQuLMJpHSms-KY76HMeHK4HAwLvHPEJMt4.MiYkkn-TvXPC8sxP7EeBBg; __Host-next-auth.csrf-token=ae2da62f2c18cc56ae3774e8e6d3941cba92dee2b9c6f636e1378e6a60b2f172%7Ca3facbcc0fa98177e9eaa9921b7e3c4618a8fe8a50d989b3c0f1d1f02a619a1f; __Secure-next-auth.callback-url=https%3A%2F%2Fchat.openai.com%2F; _cfuvid=kZCoZC2zxGLpu4OZFhqgS.pJjG63PFV0bJLTsWR3UBw-1671527691263-0-604800000; _gid=GA1.2.1218786756.1671659418; __cf_bm=if03zIJqaBVFWS9hPSdCZIJol7skKQsivY2qds7oY1g-1671727780-0-AS0IMKd6Pi/pQfOXNtNz7BMpOW7TMpKZKe17EBfas4CLIUjXr9hlsRZTzSwMgC0QS/DjENNfNUM+JK+R3TryDKjlQVsbf5uemi+/gdviNLqJCUy24XG6YiGxR0l17EkxQLyDwmiuQdr5zQN2m/ZK4PmjIa0pvXUckxioEQkg9bk6K2W+YEzqdXqab4wDAOIjxA==XX"
+s.headers["Sec-Fetch-Dest"] = "empty"
+s.headers["Sec-Fetch-Mode"] = "cors"
+s.headers["Sec-Fetch-Site"] = "same-origin"
+s.headers["TE"] = "trailers"
 
-# s.headers["Host"] = "chat.openai.com"
-# s.headers["User-Agent"] = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:108.0) Gecko/20100101 Firefox/108.0"
-# s.headers["Accept"] = "text/event-stream"
-# s.headers["Accept-Language"] = "en-US,en;q=0.5"
-# s.headers["Accept-Encoding"] = "gzip, deflate, br"
-# s.headers["Referer"] = "https://chat.openai.com/chat"
-# s.headers["Content-Type"] = "application/json"
-# s.headers["X-OpenAI-Assistant-App-Id"] = ""
-# s.headers["Authorization"] = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1UaEVOVUpHTkVNMVFURTRNMEZCTWpkQ05UZzVNRFUxUlRVd1FVSkRNRU13UmtGRVFrRXpSZyJ9.eyJodHRwczovL2FwaS5vcGVuYWkuY29tL3Byb2ZpbGUiOnsiZW1haWwiOiJtYXJrYXMudmllbGF2aWNpdXNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImdlb2lwX2NvdW50cnkiOiJMVCJ9LCJodHRwczovL2FwaS5vcGVuYWkuY29tL2F1dGgiOnsidXNlcl9pZCI6InVzZXItZnVra2hrZWpXVG9lb1F5MUJub1B6b3JUIn0sImlzcyI6Imh0dHBzOi8vYXV0aDAub3BlbmFpLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMjYyMzI1MjUxNjU2NjYzNTU1NCIsImF1ZCI6WyJodHRwczovL2FwaS5vcGVuYWkuY29tL3YxIiwiaHR0cHM6Ly9vcGVuYWkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTY3MTIyMzkyOSwiZXhwIjoxNjcxODI4NzI5LCJhenAiOiJUZEpJY2JlMTZXb1RIdE45NW55eXdoNUU0eU9vNkl0RyIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgbW9kZWwucmVhZCBtb2RlbC5yZXF1ZXN0IG9yZ2FuaXphdGlvbi5yZWFkIG9mZmxpbmVfYWNjZXNzIn0.kNAVnuQ6R73Nqg3oUZ_6WmUtCLwV8bf2gAxTzesJZv4aIdMESZvC6bEm9PJeoYb4tCR_MBxWMZThtzhu3673Mf6czmSw_T49wPjz-TOLPTiOBUbIvL1FjO8v86MTC3B_jXZgUi-0Pn2YPS6QBrH4YYP-obEovEKiDhI3Mm_hNG_A7RTqm7dI2BKWpqKXbySxCOjSqqjdDr7tsVDSWKXvhQUfO_Oie_gYUhvNsAIdSYNDOOhM7aTuc7dYZAHmfPZlIoX4_y3M6eFj3ef6tkXf5NMRD32oq-wrl127RwQpPSZXY7Jh62-xSquWZZVbWFc1z8d2sFESeAr8DC4UfDu8jQ"
-# s.headers["Content-Length"] = "233"
-# s.headers["Origin"] = "https://chat.openai.com"
-# s.headers["Alt-Used"] = "chat.openai.com"
-# s.headers["Connection"] = "keep-alive"
-# s.headers["Cookie"] = "ga=GA1.2.276779431.1670925280; cf_clearance=ChQ7Td.NxJlvhIv.3t.QRsO2zXwjy4EOg5kgQhOqYBo-1671727779-0-1-ea1b3719.7f8f7cfc.570e39dd-160; intercom-session-dgkjq2bp=WFJudkNJODdIWFExTkFZb0oxekxVM25kNmFFcXh3TUREV2oxNS82bU1naGlxS3JHUWI4a29iRGpueUVXSlpMVS0teEt0b3V4OHprUUJpKzk2K3E2TUoydz09--f298ba6b7fe13393a442fbda77610b361451a72a; intercom-device-id-dgkjq2bp=5c42ddb6-551b-4733-b2fc-479cff7e58d8; __Secure-next-auth.session-token=eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..O72y6lRHg9nTQbgK.rsPzyz6PKslYMAfPWF8bu1cl6F6O3BtM4po9gnGvfMh10klaSPvkwZ7e8KMRfWW-dnUt8cZaV6fTqgBym5fyEIkKEwihHy_xLbUEcsFHi4ZYYY2B3DmGM5zdkl0mtdmSKtjNqhbgZvPqTJawRNuiRk1t94RCHsmyrDgIc7fS9XLcHIlxIQsDPdyHC7qwIOu2yRFhQyFbC0R5KgYyw7-zwQ41EkXK-jUDzr7klsGMKei6WQjs2XLYzn37MpUdMKHdJJmp14U-31x-bNZRdLkGN5fL9GnH3LP0nMsBmsf2qqU7xVDWw5XYjOLL9kGKYghNVi_pjn_BP6K2kjkLFcEfOnYjqA2WWXqaCVY1pmWDEJgDyZcdem-nXWoorr6-xPXUYcFmdNsL6QJdvPWUkpq-KDst5_CP8Y5VwODtViXEVVg5ZdRX7695idt0AGbwMFvX8ziyJJJV2q_Sdna_7USHiVzqubn1299lpyzSdsbCX1YCk59RV30yeGR2q7Ip3V3zYKiVE7Mh35uUKw4yS2abAcEfFufjTfczUEDFXEPImH6ueIm07IYoOms7c4NeqQcnGrgjIjNcf2s3-LLJR721xFPIzv5uuEZpf27IBPqkaxJXQ_9hFnmyJRVf6xRbrZi7sTILSGalQZULsslZbhb1U2KDjC-OtBztfvqU_zRdCoPMutftN-_nRXXPwwXV2982hXtAiVkx3UnEp4GGpNtgFwwg5xsBOLl6IlR9as-3spqUjOqJJv5D7Qm2WGMZsl7FRE27D8Fd6KM9Cu0KK099QkJyR_9G_TdVGyJ-1H8S4rJDvyWbT27GBUrIu2nH4nIXPnUTXDQei0nd5tSWkcnqpzG1htYALzNCfOXy_luyAvJmgYQDt6VDnY99EYPxQwYZXOcubnRl1Su1pZ9Ef2L3zI_lqNtWz5k_YtG0Ajg4wOM6Z4r37kEFaOGuc8xg3Y8JHSiD-5jcc2wCfIosNEwYTF24B15q7uF4cmFH7Zl0hetu_rjmIgSncJH0HMvQbPIM_pjKLxZkI-9IruzqeFnkxrSHX-Mm4bbbkPt1boaa0VGfq0r_LpDSgRZXI7CIIp6_pps5VQhHy3nrq1TBezFEakdLKkmT51E_ao50BuD_NGhGynVwM1bROipQIINeJUL7VGDLxx240W2VDbisXpd90FRd9NlEdzXjmB3wK5Cy_mkyxTfmTdSadu04_i3w8ILeKUCjTNztMePF_rdXG5xQqAYznpb9t1H9Xvf-ibvGZkx-8eLke0fcApo-Azc061Z0Q2B_oJ1qkSgdUN1lTQDe5Y2IE604UrMT4lAXQZPLYDk4Xy19eJ8j6nXVImNSYfdi4EK0GKNDh8qrWkXgpNCk1o8Hg9llN2jDk5ofFzF7cKxo447tSCJFYsRy6ujja7eUmn9mT7Ml7UCAtdCbZnEOtSGWgGoNAxTqYSNCjjUPe9v0hx7LTqRrjo5Wte6E2QTti1FTFmH3un3CKCaZxc7o9VGS00rAcpe7fWIXXP10lfVuonx_tlcH80ZFenzdmgMpqSHR7-Ay9Z6dcagSaK_i0tKYdOAd3bQFXjzuf7nFjDNBGs0suEW33FotRk4exD5lw8o6LXYcdpknG1g-fTnf9KxQcdPNh7ulqqmQ9USvGmDo8gpBvEnYmlkJn74J79aD5JU6Z-osFbTYeOTWxXnXzvJNotmKwNyLtFxMqBo3HO6_iR_vv-JRtK9fFqGqznv2rqwKKH167T-eXwRPIHxGVH_QjHGI_5LVCAKBvlr18bsVJTbJoyfV44BK4s1jOj08BAQFw7L1aAa3hTUA1SsZnB98js3lUTaDhvNusVzPvR4wI3LMsw6qg42d9DRNYQGtskFFAV9GQPdLIar3d75b3PGClx5J5pqoZ9bbYshbDkFR1bVo4uocOvVRRHfpxl_H9s47JFqlSN2xKGCYbih1dk1qwungNogHz6f-jgz01oREW4j5_jpICKAzMOjWEf-xt3p5b0DNNM-BOrLtsGEuRotTFM4AoY-nktezB9ulK68FMmSA9UBQwgQnTSf3EQckP_-g5GywGlxTxfkLaG0p_Cvlx5IPaO5os9_AjmcC7g7tLaISzg_nwxqC9lOCgwopNC29vIyENCYLRf-z1BtKZHybFHWFhVe7JRlJexxfSLLd3WytCaPNfjJ1TwioBdpAk6NImRhp48XGVN77l1whhrKTAuu2-jhiDu3lAtDDzb7yaFNT3KrnSXEHAUphcq8pz8XHcGuKA8BiTaGZPQBQuLMJpHSms-KY76HMeHK4HAwLvHPEJMt4.MiYkkn-TvXPC8sxP7EeBBg; __Host-next-auth.csrf-token=ae2da62f2c18cc56ae3774e8e6d3941cba92dee2b9c6f636e1378e6a60b2f172%7Ca3facbcc0fa98177e9eaa9921b7e3c4618a8fe8a50d989b3c0f1d1f02a619a1f; __Secure-next-auth.callback-url=https%3A%2F%2Fchat.openai.com%2F; _cfuvid=kZCoZC2zxGLpu4OZFhqgS.pJjG63PFV0bJLTsWR3UBw-1671527691263-0-604800000; _gid=GA1.2.1218786756.1671659418; __cf_bm=if03zIJqaBVFWS9hPSdCZIJol7skKQsivY2qds7oY1g-1671727780-0-AS0IMKd6Pi/pQfOXNtNz7BMpOW7TMpKZKe17EBfas4CLIUjXr9hlsRZTzSwMgC0QS/DjENNfNUM+JK+R3TryDKjlQVsbf5uemi+/gdviNLqJCUy24XG6YiGxR0l17EkxQLyDwmiuQdr5zQN2m/ZK4PmjIa0pvXUckxioEQkg9bk6K2W+YEzqdXqab4wDAOIjxA==XX"
-# s.headers["Sec-Fetch-Dest"] = "empty"
-# s.headers["Sec-Fetch-Mode"] = "cors"
-# s.headers["Sec-Fetch-Site"] = "same-origin"
-# s.headers["TE"] = "trailers"
-
-# print(s.post(host_message, data=data_payload).content)
-
-
-class ChatGPTSession():
-
-    def __initializeSession(self):
-        self.session = requests.session()
-        self.session.mount("https://{host}/".format(host=payloads.OPENAI_HOST), CipherAdapter())
-
-    def __getAuthToken(self):
-        self.session.headers = payloads.generateSessionHeadersPayload(self.clearance_token, self.session_token)
-        response = self.session.get(payloads.SESSION_API)
-
-        if response.status_code == 200:
-            # everything worked out, continue
-            print(response.json())
-            return response.content
-        elif response.status_code == 403:
-
-            # cloudflare finger print worked out
-            return None
-
-        else:
-            raise Exception("Unknown status code on session creation: {status}".format(response.status_code))
-
-    def __init__(self, session_token, clearance_token):
-
-        # Initialization steps:
-        self.session_token = session_token
-        self.clearance_token = clearance_token
-        self.__initializeSession()
-
-        # Safety checks steps:
-
-        if self.session == None:
-            raise Exception("Failed to initialize Requests session with custom ciphers")
-
-        if self.session_token == None:
-            raise Exception("Session token is not provided")
-
-        if self.clearance_token == None:
-            raise Exception("Clearance token is not provided")
-
-        self.bearerToken = self.__getAuthToken()
-
-        if self.bearerToken == None:
-            raise Exception(
-                "Session / clearance token is incorrect (something may changed in their api)")
-
-    def create_convo(self):
-        return ChatConversation(self)
+print(s.post(host_message).content)
 
 
-class ChatConversation():
-    def __init__(self, chatgptsession):
-        pass
+# class ChatGPTSession():
+
+#     def __initializeSession(self):
+#         self.session = requests.session()
+#         self.session.mount("https://{host}/".format(host=payloads.OPENAI_HOST), CipherAdapter())
+
+#     def __getAuthToken(self):
+#         self.session.headers = payloads.generateSessionHeadersPayload(self.clearance_token, self.session_token)
+#         response = self.session.get(payloads.SESSION_API)
+
+#         if response.status_code == 200:
+#             # everything worked out, continue
+#             print(response.json())
+#             return response.content
+#         elif response.status_code == 403:
+
+#             # cloudflare finger print worked out
+#             return None
+
+#         else:
+#             raise Exception("Unknown status code on session creation: {status}".format(response.status_code))
+
+#     def __init__(self, session_token, clearance_token, bearer):
+
+#         # Initialization steps:
+#         self.session_token = session_token
+#         self.clearance_token = clearance_token
+#         self.__initializeSession()
+
+#         # Safety checks steps:
+
+#         if self.session == None:
+#             raise Exception("Failed to initialize Requests session with custom ciphers")
+
+#         if self.session_token == None:
+#             raise Exception("Session token is not provided")
+
+#         if self.clearance_token == None:
+#             raise Exception("Clearance token is not provided")
+
+#         self.bearerToken = bearer
+
+#         if self.bearerToken == None:
+#             raise Exception(
+#                 "Session / clearance token is incorrect (something may changed in their api)")
+
+#     def create_convo(self):
+#         return ChatConversation(self)
+
+
+# class ChatConversation():
+#     def __init__(self, chatgptsession):
+#         self.gpts = chatgptsession
+#         chatgptsession.session.headers = payloads.generateMessageHeadersPayload(chatgptsession.bearerToken, chatgptsession.clearance_token, chatgptsession.session_token)
+
+#     def sendMessage(self, message):
+#         response = self.gpts.session.post("https://{host}/".format(host=payloads.OPENAI_HOST), json=payloads.generateMessageBodyPayload(message))
+
+#         if response.status_code == 200:
+
+#             responseMessage = dataManip.extractResponseMessageFromMessageContent(response.content)
+#             if responseMessage == None:
+#                 return " "
+#             else:
+#                 return responseMessage
+
+#         elif response.status_code == 403:
+#             raise Exception("Failed to send message to convo 403")
+#             return None
+
+#         return None
+
 
 
 
